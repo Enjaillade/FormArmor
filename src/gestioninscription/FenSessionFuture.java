@@ -13,6 +13,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import sql.GestionBdd;
 import java.util.*;
+import javax.swing.JOptionPane;
 
 // Imports pour le pdf
 import com.itextpdf.text.*;
@@ -147,6 +148,8 @@ public final class FenSessionFuture extends javax.swing.JFrame
         // Création du tableau
         PdfPTable table = new PdfPTable(7);
         table.setWidthPercentage(100);
+        // Variable permettant de retouver si des résultats sont retournés
+        int resultat = 0;
         try
         {
             // Récupération des inscrits à la session
@@ -172,6 +175,10 @@ public final class FenSessionFuture extends javax.swing.JFrame
             // Choix d'une police plus petite pour le tableau
             BaseFont bf = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.EMBEDDED);
             Font fontCell = new Font(bf, 9, Font.NORMAL);
+            if (rs.next())
+            {
+                resultat = 1;
+            }
             while (rs.next())
             {
                 if (i == 0)
@@ -192,21 +199,27 @@ public final class FenSessionFuture extends javax.swing.JFrame
                 table.addCell(new Phrase(rs.getString("c.ville"), fontCell));
                 table.addCell(new Phrase(rs.getString("c.email"), fontCell));
                 table.addCell("");
-i++;
+                i++;
             }
         } catch (SQLException ex)
         {
             Logger.getLogger(FenSessionFuture.class.getName()).log(Level.SEVERE, null, ex);
         }
-        // Ajout du contenu
-        document.add(preface);
-        document.add(table);
-        document.close();
-        if (Desktop.isDesktopSupported()) {
-            // no application registered for PDFs
-            File myFile = new File(home + "/Downloads/feuilleEmarg.pdf");
-            Desktop.getDesktop().open(myFile);
-}
+        // Ajout du contenu si la requete retournait au moins 1 résultat
+        if (resultat == 1)
+        {
+            document.add(preface);
+            document.add(table);
+            document.close();
+            if (Desktop.isDesktopSupported())
+            {
+                // no application registered for PDFs
+                File myFile = new File(home + "/Downloads/feuilleEmarg.pdf");
+                Desktop.getDesktop().open(myFile);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Personne n'est inscrit à cette session", "Erreur lors de la création du pdf", JOptionPane.INFORMATION_MESSAGE);
+        }
     }
     
     private static void addMetaData(Document document)
