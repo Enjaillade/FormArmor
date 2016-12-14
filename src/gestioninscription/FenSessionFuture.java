@@ -218,13 +218,8 @@ public final class FenSessionFuture extends javax.swing.JFrame
                 Desktop.getDesktop().open(myFile);
             }
         } else {
-            JOptionPane.showMessageDialog(null, "Personne n'est inscrit à cette session", "Erreur lors de la création du pdf", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Personne n'est inscrit à cette session", "Impossible de créer le pdf", JOptionPane.INFORMATION_MESSAGE);
         }
-    }
-    
-    private static void addMetaData(Document document)
-    {
-        
     }
     
     /**
