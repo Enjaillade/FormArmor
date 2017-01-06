@@ -43,6 +43,7 @@ public final class FenSessionFuture extends javax.swing.JFrame
     {
         initComponents();
         stmt = GestionBdd.connexionBdd(GestionBdd.TYPE_MYSQL, "formarmor", "localhost", "root", "");
+        btnGenPDF.setVisible(false);
         renseigne();
     }
 
@@ -65,6 +66,13 @@ public final class FenSessionFuture extends javax.swing.JFrame
         jLabel1.setText("SESSIONS FUTURES");
 
         tblSesFuture.setModel(new ModeleJTableListeSession());
+        tblSesFuture.addMouseListener(new java.awt.event.MouseAdapter()
+        {
+            public void mouseClicked(java.awt.event.MouseEvent evt)
+            {
+                tblSesFutureMouseClicked(evt);
+            }
+        });
         jScrollPane5.setViewportView(tblSesFuture);
 
         btnGenPDF.setText("Générer le pdf");
@@ -109,7 +117,7 @@ public final class FenSessionFuture extends javax.swing.JFrame
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    
     private void btnGenPDFActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnGenPDFActionPerformed
     {//GEN-HEADEREND:event_btnGenPDFActionPerformed
         int nomSession = parseInt(tblSesFuture.getValueAt(tblSesFuture.getSelectedRow(), 0).toString());
@@ -126,6 +134,14 @@ public final class FenSessionFuture extends javax.swing.JFrame
             Logger.getLogger(FenSessionFuture.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnGenPDFActionPerformed
+
+    private void tblSesFutureMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_tblSesFutureMouseClicked
+    {//GEN-HEADEREND:event_tblSesFutureMouseClicked
+        if (tblSesFuture.getValueAt(tblSesFuture.getSelectedRow(), 0) == null)
+            btnGenPDF.setVisible(false);
+        else
+            btnGenPDF.setVisible(true);
+    }//GEN-LAST:event_tblSesFutureMouseClicked
 
     private void createPdf(int idSession) throws DocumentException, IOException
     {
@@ -159,7 +175,8 @@ public final class FenSessionFuture extends javax.swing.JFrame
             requete += "WHERE s.id=" + idSession + " ";
             requete += "AND s.formation_id=f.id ";
             requete += "AND s.id=i.session_formation_id ";
-            requete += "AND i.client_id=c.id";
+            requete += "AND i.client_id=c.id ";
+            requete += "ORDER BY c.id ASC";
             ResultSet rs = stmt.executeQuery(requete);
             // Initialisation du tableau
             table.addCell("N°");
